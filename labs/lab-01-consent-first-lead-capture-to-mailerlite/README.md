@@ -1,7 +1,8 @@
 # Lab 1: Consent-First Lead Capture to MailerLite
 
-**Duration:** 75 minutes  
-**Alignment:** LO1 | K3 | A1  
+**Duration:** 75 minutes
+
+**Alignment:** LO1 | K3 | A1
 **Tools:** n8n Form Trigger, Code, IF, HTTP Request, MailerLite API
 
 ## Goal

@@ -35,7 +35,7 @@ The content agents propose and critique. Deterministic workflow nodes validate c
 | 2. Campaign Brief and Audience Contract | Convert an objective into a versioned agent context | n8n JSON, campaign brief, brand guidelines |
 | 3. Multi-Agent Newsletter Editorial System | Coordinate strategist, researcher, copywriter, critic and refiner roles | n8n JSON, output schema, approved sources |
 | 4. Human Approval and MailerLite Scheduling | Bind approval to the exact payload before creating and scheduling a campaign | n8n JSON, approved newsletter, checklist |
-| 5. Newsletter Analytics Dashboard | Normalize events, deduplicate, calculate KPIs and render a diagnostic dashboard | n8n JSON, event data, dashboard HTML |
+| 5. MailerLite Campaign Analytics Dashboard | Fetch and validate live campaign statistics, calculate labelled KPIs and render a diagnostic dashboard | n8n JSON, report data, dashboard HTML |
 | 6. Trend and Feedback Optimization Agent | De-identify feedback, build evidence cards and propose a reversible experiment | n8n JSON, feedback data, experiment contract |
 
 Start with the [labs index](labs/README.md). Each lab folder is self-contained and includes a detailed README, acceptance checklist, importable n8n workflow and safe sample data.
@@ -44,7 +44,7 @@ Start with the [labs index](labs/README.md). Each lab folder is self-contained a
 
 - [Learner Guide (Markdown)](LG-Agentic%20AI%20for%20Email%20Marketing%20Campaign.md)
 - [Learner Guide (PDF)](courseware/LG-Agentic%20AI%20for%20Email%20Marketing%20Campaign.pdf)
-- [Course slides (PDF)](courseware/Agentic%20AI%20for%20Email%20Marketing%20Campaign-v1.0.pdf)
+- [Course slides (PDF)](courseware/Agentic%20AI%20for%20Email%20Marketing%20Campaign-v1.1.pdf)
 
 The slides are concept-led. Detailed click paths, tests, evidence requirements and acceptance criteria are in the Learner Guide and lab folders.
 

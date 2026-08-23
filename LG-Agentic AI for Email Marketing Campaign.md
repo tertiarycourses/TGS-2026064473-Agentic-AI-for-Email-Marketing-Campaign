@@ -1,7 +1,7 @@
 # Agentic AI for Email Marketing Campaign - Learner Guide
 
 **Course code:** TGS-2026064473  
-**Version:** v1.0 (24 August 2026)
+**Version:** v1.1 (24 August 2026)
 
 ## Learning outcomes
 
@@ -172,27 +172,28 @@ Working files: `labs/lab-03-*/`
 
 **Duration:** 105 minutes  
 **Alignment:** LO1 | K4 | A3  
-**Tools:** n8n Chat Trigger, AI Agent, Chat HITL Tool, HTTP Request, Code
+**Tools:** n8n Manual Trigger, Gmail Send and Wait, IF, Code, HTTP Request
 
 Bind a human decision to the exact newsletter payload, create a MailerLite draft and schedule only the approved version.
 
 #### Detailed procedure
 
-1. Import hitl-mailerlite-scheduler.json and connect the same approved chat-model credential used in Lab 3.
-2. Create an n8n Header Auth credential for MailerLite and attach it to both HTTP Request nodes.
-3. Open approved-newsletter.json and replace placeholder sender, group and timezone values with training values.
-4. Confirm the verified sender already exists in MailerLite.
-5. Execute Canonicalize and Hash and record the payload_hash.
-6. Open the Review Newsletter tool and confirm it presents subject, audience group, CTA URL, schedule and hash.
-7. Run the workflow and choose Reject; verify neither MailerLite node executes.
-8. Run again, choose Revise or deny, and confirm reviewer feedback is stored with the content version.
-9. Run again, choose Approve, then change one character in the content before the hash check.
-10. Verify the hash mismatch blocks the external write and returns the draft to review.
-11. Restore the approved content and approve again.
-12. Inspect Create Campaign Draft and confirm the response contains a campaign ID and draft status.
-13. Inspect Schedule Campaign and verify the schedule is in the future with the intended timezone.
-14. Run the recovery check and confirm it reads campaign status before any retry.
-15. Capture the decision, campaign ID and scheduled timestamp as assessment evidence.
+1. Import hitl-mailerlite-scheduler.json and inspect the connected approval, hash-check, draft and schedule paths.
+2. Attach an n8n Gmail credential to Human Newsletter Approval and replace the reviewer address with a training reviewer.
+3. Create an n8n Header Auth credential for MailerLite and attach it to both HTTP Request nodes.
+4. Open approved-newsletter.json, replace placeholder sender, group and timezone values, then copy the approved fields into Load Pending Newsletter.
+5. Confirm the verified sender already exists in MailerLite.
+6. Execute Canonicalize and Hash and record the payload_hash.
+7. Open Human Newsletter Approval and confirm it presents subject, audience group, CTA URL, schedule and hash.
+8. Run the workflow and choose Reject; verify neither MailerLite node executes.
+9. Run again, choose Decline, and confirm the decision record contains the content version and approved payload hash.
+10. Run again, choose Approve, then change one character in the content before the hash check.
+11. Verify the hash mismatch blocks the external write and returns the draft to review.
+12. Set review_expires_at to a past timestamp and confirm the expiry guard also blocks release.
+13. Restore the approved content and approve again.
+14. Inspect Create MailerLite Campaign and confirm the response contains a campaign ID and draft status.
+15. Inspect Schedule MailerLite Campaign and verify the schedule is in the future with the intended timezone.
+16. Capture the decision, campaign ID and scheduled timestamp as assessment evidence.
 
 #### Acceptance criteria
 
@@ -213,9 +214,10 @@ Bind a human decision to the exact newsletter payload, create a MailerLite draft
 #### Troubleshooting
 
 - hash mismatch blocks write
-- rejection returns feedback
+- expired approval blocks release
+- rejection records the decision without an external write
 - 422 exposes safe validation detail
-- retry checks campaign status before a second write
+- failed draft or schedule responses stop the workflow
 
 Working files: `labs/lab-04-*/`
 
@@ -228,53 +230,53 @@ MailerLite events -> normalised facts -> KPI model -> diagnostic dashboard
 - Use cohort and funnel views to diagnose where performance is lost.
 - State limitations of open tracking, attribution and small samples.
 
-### Lab 5: Newsletter Analytics Collector and Dashboard
+### Lab 5: MailerLite Campaign Analytics Dashboard
 
 **Duration:** 120 minutes  
 **Alignment:** LO2 | K5 | A4  
-**Tools:** n8n Webhook, Schedule Trigger, Code, HTTP Request, Respond to Webhook
+**Tools:** n8n Webhook, Set, HTTP Request, Code, Respond to Webhook
 
-Ingest MailerLite events, normalise and deduplicate them, calculate metrics at defined denominators and publish a self-contained dashboard.
+Fetch current MailerLite campaign statistics, normalise the report, calculate labelled metrics and publish a self-contained diagnostic dashboard.
 
 #### Detailed procedure
 
-1. Import analytics-dashboard.json and open the workflow notes that separate ingestion from presentation.
-2. Open campaign-events.csv and identify the event grain, campaign key, subscriber key and timestamp.
-3. Pin the first ten CSV rows at the Normalize Events node for a credential-free test.
-4. Execute Normalize Events and verify UTC timestamps, allowed event types and source hashes.
-5. Run the Deduplicate Events node twice and confirm the second run adds no duplicate facts.
-6. Open metric-dictionary.md and confirm each metric denominator matches the Code node.
+1. Import analytics-dashboard.json and inspect the connected dashboard request, MailerLite fetch, validation, metric and response path.
+2. Attach the same n8n Header Auth credential used for MailerLite in Lab 4.
+3. Open Workflow Configuration and replace the placeholder campaign ID with the approved training campaign ID.
+4. Execute Fetch MailerLite Campaign and verify the response status is 200 before continuing.
+5. Execute Validate Campaign Report and confirm campaign ID, name, status and statistics are present.
+6. Open metric-dictionary.md and confirm each metric denominator matches Aggregate KPIs.
 7. Execute Aggregate KPIs and manually recompute one delivery rate and one CTR.
-8. Inspect the cohort output for new leads, existing customers and dormant subscribers.
-9. Open the dashboard Webhook Test URL and verify the KPI cards, funnel and trend views render.
-10. Select one campaign and one cohort and verify the dashboard labels reflect the filter.
-11. Introduce one duplicate click event and confirm unique-click metrics do not double-count it.
-12. Introduce a campaign with zero delivered events and confirm rates show N/A rather than a division error.
+8. Open the dashboard Webhook Test URL and verify the KPI cards, funnel and trend views render.
+9. Verify the dashboard labels show the current campaign status and last refresh time.
+10. Pin a report with zero sent messages and confirm rates show N/A rather than a division error.
+11. Replace the campaign ID with an invalid value and confirm the workflow exposes a safe 404 diagnosis rather than rendering misleading metrics.
+12. Restore the valid campaign ID and refresh the dashboard.
 13. Compare actual results with targets and identify the largest material gap.
 14. Write one evidence-based diagnosis and one controlled corrective action.
 15. Export dashboard-sample.html and complete CHECKLIST.md.
 
 #### Acceptance criteria
 
-- [ ] events normalised
-- [ ] duplicates ignored
+- [ ] live report fetched
+- [ ] response validated
 - [ ] metrics recomputable
 - [ ] dashboard renders
-- [ ] diagnosis cites cohort/funnel evidence
+- [ ] diagnosis cites status/funnel evidence
 
 #### Evidence
 
-- sample event payloads
-- deduplication result
+- MailerLite report response
+- validated metric object
 - metric dictionary
 - dashboard HTML or screenshot
 - diagnostic narrative
 
 #### Troubleshooting
 
-- invalid signature rejected
-- duplicate event ignored
-- late event updates the correct window
+- 401 identifies a credential problem
+- 404 identifies an invalid campaign ID
+- missing statistics fail schema validation
 - empty denominator returns null not infinity
 
 Working files: `labs/lab-05-*/`

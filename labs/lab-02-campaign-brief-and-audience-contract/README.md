@@ -1,7 +1,8 @@
 # Lab 2: Campaign Brief and Audience Contract
 
-**Duration:** 60 minutes  
-**Alignment:** LO1 | K1-K2  
+**Duration:** 60 minutes
+
+**Alignment:** LO1 | K1-K2
 **Tools:** n8n Form Trigger, Edit Fields, Code, Structured Output
 
 ## Goal

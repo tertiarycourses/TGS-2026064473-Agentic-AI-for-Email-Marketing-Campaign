@@ -2,59 +2,58 @@
   "name": "LAB04 - Human Approval and MailerLite Scheduling",
   "nodes": [
     {
-      "parameters": {
-        "options": {
-          "responseMode": "responseNodes",
-          "allowFileUploads": false
-        }
-      },
-      "id": "e097f98b-090b-5256-a08d-7a98bbb1f4db",
-      "name": "When chat message received",
-      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
-      "typeVersion": 1.4,
+      "parameters": {},
+      "id": "39433395-e237-5662-aff0-9ab4207e1056",
+      "name": "When clicking Execute workflow",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
       "position": [
-        -1020,
+        -1400,
         180
       ]
     },
     {
       "parameters": {
-        "promptType": "define",
-        "text": "={{$json.chatInput}}",
-        "options": {
-          "systemMessage": "You are a campaign release assistant. Read the approved newsletter payload. Use the Schedule Approved Campaign tool only when the user asks to release it. Never invent sender, group, schedule or content."
-        }
-      },
-      "id": "efdf3b7f-fe4d-59a9-b7e5-56dad4b42381",
-      "name": "Campaign Release Agent",
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 3.1,
-      "position": [
-        -780,
-        180
-      ]
-    },
-    {
-      "parameters": {
-        "model": {
-          "__rl": true,
-          "mode": "list",
-          "value": "gpt-4.1-mini",
-          "cachedResultName": "gpt-4.1-mini"
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1d6b5855-8b06-5bda-9c9b-970fa9831dd7",
+              "name": "payload",
+              "type": "object",
+              "value": "={{ {campaign_id:'AEMC-2026-001',content_version:1,subject:'A safer way to scale your newsletter',preheader:'Combine specialist AI agents with a human release gate.',html:\"<h1>Build a controlled campaign loop</h1><p>Draft with agents, approve the exact payload, then schedule.</p><p><a href='https://example.com/book'>Book a consultation</a></p>\",text:'Build a controlled campaign loop. Book: https://example.com/book',from_name:'Training Marketing Team',verified_sender:'replace-with-verified-sender@example.com',group_id:'TRAINING_GROUP_ID',cta_url:'https://example.com/book',schedule:{date:'2026-09-15',hours:'10',minutes:'00',timezone_id:1}} }}"
+            }
+          ]
         },
         "options": {}
       },
-      "id": "1e4a3e39-153d-5225-9939-8d3f62a3bce5",
-      "name": "OpenAI Chat Model",
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.3,
+      "id": "a09aaefe-6a29-5a4a-9698-d3f1ac9d53d8",
+      "name": "Load Pending Newsletter",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
       "position": [
-        -780,
-        450
+        -1190,
+        180
       ]
     },
     {
       "parameters": {
+        "jsCode": "const crypto=require('crypto');\nconst stable=v=>Array.isArray(v)?`[${v.map(stable).join(',')}]`:(v&&typeof v==='object'?`{${Object.keys(v).sort().map(k=>`${JSON.stringify(k)}:${stable(v[k])}`).join(',')}}`:JSON.stringify(v));\nconst payload=$json.payload;\nconst canonical=stable(payload);\nconst approved_payload_hash=crypto.createHash('sha256').update(canonical).digest('hex');\nreturn [{json:{payload,canonical,approved_payload_hash,review_expires_at:new Date(Date.now()+86400000).toISOString()}}];"
+      },
+      "id": "23b8997f-4167-5027-9692-de3351f6d7df",
+      "name": "Canonicalize and Hash",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -950,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "reviewer@example.com",
+        "subject": "=Newsletter approval needed: {{ $('Canonicalize and Hash').item.json.payload.subject }}",
+        "message": "=Campaign: {{ $('Canonicalize and Hash').item.json.payload.campaign_id }} v{{ $('Canonicalize and Hash').item.json.payload.content_version }}\nSubject: {{ $('Canonicalize and Hash').item.json.payload.subject }}\nAudience group: {{ $('Canonicalize and Hash').item.json.payload.group_id }}\nCTA: {{ $('Canonicalize and Hash').item.json.payload.cta_url }}\nSchedule: {{ JSON.stringify($('Canonicalize and Hash').item.json.payload.schedule) }}\nPayload SHA-256: {{ $('Canonicalize and Hash').item.json.approved_payload_hash }}\nExpires: {{ $('Canonicalize and Hash').item.json.review_expires_at }}\n\nApprove only if this exact payload may be created and scheduled in MailerLite.",
         "approvalOptions": {
           "values": {
             "approvalType": "double"
@@ -62,27 +61,116 @@
         },
         "options": {}
       },
-      "id": "88d8c99d-bd70-55b8-922f-b5b6ee56b4eb",
-      "name": "Review Approved Payload",
-      "type": "@n8n/n8n-nodes-langchain.chatHitlTool",
-      "typeVersion": 1.2,
+      "id": "61ae22e0-452e-5fc8-bbf6-413ce5859a16",
+      "name": "Human Newsletter Approval",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
       "position": [
-        -470,
-        380
+        -680,
+        180
+      ],
+      "webhookId": "newsletter-approval-12b048a8-4c1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "caseSensitive": true,
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "5f842412-03da-5e66-a4ed-3a050674c235",
+              "leftValue": "={{$json.data.approved}}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d97a4d4e-40d5-5f41-b718-dd2ea273317d",
+      "name": "Approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -420,
+        180
       ]
     },
     {
       "parameters": {
-        "description": "Create and schedule a MailerLite campaign only after human approval. Input is JSON with subject, html, from_name, verified_sender, group_id, schedule, timezone_id and payload_hash.",
-        "jsCode": "const p=JSON.parse(query); const required=['subject','html','from_name','verified_sender','group_id','schedule','timezone_id','payload_hash']; const missing=required.filter(k=>!p[k]); if(missing.length) throw new Error('missing:'+missing.join(',')); return JSON.stringify({status:'APPROVED_FOR_MAILERLITE_HTTP_REQUESTS',payload:p});"
+        "jsCode": "const crypto=require('crypto');\nconst stable=v=>Array.isArray(v)?`[${v.map(stable).join(',')}]`:(v&&typeof v==='object'?`{${Object.keys(v).sort().map(k=>`${JSON.stringify(k)}:${stable(v[k])}`).join(',')}}`:JSON.stringify(v));\nconst source=$('Canonicalize and Hash').item.json;\nconst current_payload=source.payload;\nconst current_hash=crypto.createHash('sha256').update(stable(current_payload)).digest('hex');\nconst approval_not_expired=Date.now()<Date.parse(source.review_expires_at);\nreturn [{json:{payload:current_payload,approved_payload_hash:source.approved_payload_hash,current_payload_hash:current_hash,hash_matches:current_hash===source.approved_payload_hash,approval_not_expired,review_decision:$json.data,review_expires_at:source.review_expires_at}}];"
       },
-      "id": "68b5c515-f506-59d4-847a-c5902d480f06",
-      "name": "Schedule Approved Campaign",
-      "type": "@n8n/n8n-nodes-langchain.toolCode",
-      "typeVersion": 1.3,
+      "id": "ff5f9b82-4427-54f4-a3db-5f3f8e0842db",
+      "name": "Recheck Exact Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
-        -180,
-        380
+        -150,
+        70
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "6d8fec8a-6f28-505c-bda9-ed7523eca363",
+              "leftValue": "={{$json.hash_matches}}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "38140de9-2a8a-57a3-94d9-6e5b1f72704f",
+              "leftValue": "={{$json.approval_not_expired}}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c9b55a28-cd8f-5dce-b979-7d2b14388f52",
+      "name": "Hash and Expiry Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        100,
+        70
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const p=$json.payload;\nreturn [{json:{approved_payload_hash:$json.approved_payload_hash,review_decision:$json.review_decision,schedule:p.schedule,request:{name:`${p.campaign_id} v${p.content_version}`,type:'regular',emails:[{subject:p.subject,from_name:p.from_name,from:p.verified_sender,content:p.html}],groups:[p.group_id]}}}];"
+      },
+      "id": "ea85f5e4-46e5-58a6-9063-0fd6e195a95f",
+      "name": "Prepare MailerLite Campaign",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        360,
+        0
       ]
     },
     {
@@ -94,7 +182,7 @@
         "sendBody": true,
         "contentType": "raw",
         "rawContentType": "application/json",
-        "body": "={{JSON.stringify($json.payload)}}",
+        "body": "={{JSON.stringify($json.request)}}",
         "options": {
           "response": {
             "response": {
@@ -104,25 +192,38 @@
           }
         }
       },
-      "id": "fa467657-42c4-5d6b-b701-1b217a872900",
-      "name": "MailerLite Create Campaign Contract",
+      "id": "9b2f5c3e-2497-545a-bfa6-6da8f1519c5a",
+      "name": "Create MailerLite Campaign",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        170,
-        260
+        620,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const status=Number($json.statusCode); const campaign=$json.body?.data;\nif(status!==200||!campaign?.id) throw new Error(`MailerLite draft failed: HTTP ${status}; ${JSON.stringify($json.body?.errors||$json.body?.message||'missing campaign id')}`);\nconst release=$('Prepare MailerLite Campaign').item.json;\nreturn [{json:{campaign_id:campaign.id,draft_status:campaign.status,schedule:release.schedule,approved_payload_hash:release.approved_payload_hash,review_decision:release.review_decision}}];"
+      },
+      "id": "bac0973b-20a2-5c8f-82e5-5439a0730326",
+      "name": "Validate Draft Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        0
       ]
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://connect.mailerlite.com/api/campaigns/{{$json.body.data.id}}/schedule",
+        "url": "=https://connect.mailerlite.com/api/campaigns/{{$json.campaign_id}}/schedule",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "contentType": "raw",
         "rawContentType": "application/json",
-        "body": "={{JSON.stringify({delivery:'scheduled',schedule:$('Schedule Approved Campaign').item.json.payload.schedule})}}",
+        "body": "={{JSON.stringify({delivery:'scheduled',schedule:$json.schedule})}}",
         "options": {
           "response": {
             "response": {
@@ -132,81 +233,256 @@
           }
         }
       },
-      "id": "f9e3f32a-acb4-5c5a-884f-90b11a405839",
-      "name": "MailerLite Schedule Contract",
+      "id": "c5f0b554-5225-5d52-a103-23dad42529f6",
+      "name": "Schedule MailerLite Campaign",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        430,
-        260
+        1140,
+        0
       ]
     },
     {
       "parameters": {
-        "width": 1900,
-        "height": 220,
-        "content": "## Human approval boundary\nThe Chat HITL Tool intercepts the schedule tool before execution. For the live lab, connect the approved tool output to the two HTTP Request nodes and add a payload-hash recheck Code node. The tool-code response is intentionally a safe contract marker until credentials are configured."
+        "jsCode": "const status=Number($json.statusCode); const campaign=$json.body?.data;\nif(status!==200||!campaign?.id) throw new Error(`MailerLite schedule failed: HTTP ${status}; ${JSON.stringify($json.body?.errors||$json.body?.message||'missing campaign id')}`);\nconst release=$('Validate Draft Response').item.json;\nreturn [{json:{result:'scheduled',campaign_id:campaign.id,campaign_status:campaign.status,scheduled_for:campaign.scheduled_for||null,approved_payload_hash:release.approved_payload_hash,review_decision:release.review_decision,execution_id:$execution.id,evidence_at:new Date().toISOString()}}];"
+      },
+      "id": "4d12c5b4-dd7d-511f-8239-215c15207a1d",
+      "name": "Capture Release Evidence",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1400,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "056a5fde-441d-53dd-bede-18c8e4fef6f3",
+              "name": "result",
+              "type": "string",
+              "value": "rejected_no_external_write"
+            },
+            {
+              "id": "3218a7a3-64ff-5323-82ca-40ef8104756e",
+              "name": "review_decision",
+              "type": "object",
+              "value": "={{$json.data}}"
+            },
+            {
+              "id": "f36b3d8e-63db-5315-acf3-353e358fa383",
+              "name": "content_version",
+              "type": "number",
+              "value": "={{$('Canonicalize and Hash').item.json.payload.content_version}}"
+            },
+            {
+              "id": "5e94439a-aa6c-59b9-a8ea-e8e656ed5917",
+              "name": "payload_hash",
+              "type": "string",
+              "value": "={{$('Canonicalize and Hash').item.json.approved_payload_hash}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3dc5ef20-0504-5269-bb8b-4271cf8b3d9b",
+      "name": "Record Rejection",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -150,
+        310
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "81e2ae91-227a-56ec-91de-dbee8d994083",
+              "name": "result",
+              "type": "string",
+              "value": "blocked_hash_mismatch_or_expired_approval"
+            },
+            {
+              "id": "91b0c4cf-e885-5b5f-b1cb-22239457bacf",
+              "name": "approved_payload_hash",
+              "type": "string",
+              "value": "={{$json.approved_payload_hash}}"
+            },
+            {
+              "id": "e107a6f6-9e55-56b8-b3d8-7f5409a9f9df",
+              "name": "current_payload_hash",
+              "type": "string",
+              "value": "={{$json.current_payload_hash}}"
+            },
+            {
+              "id": "c13da449-d314-5e47-adfa-15472f27bc20",
+              "name": "approval_not_expired",
+              "type": "boolean",
+              "value": "={{$json.approval_not_expired}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c8367834-296a-509b-9fb3-94db7f95b65d",
+      "name": "Block Release Guard",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        360,
+        210
+      ]
+    },
+    {
+      "parameters": {
+        "width": 3040,
+        "height": 250,
+        "content": "## Human approval boundary — connected release path\nThis workflow follows the reference course's Gmail **Send and Wait** pattern. Approval is bound to the displayed SHA-256 payload hash; rejection makes no MailerLite call, and a changed payload is blocked before draft creation. Replace the reviewer, sender, group, schedule and credentials with training values. Direct HTML content creation requires a MailerLite plan that supports the campaign content field."
       },
       "id": "434be3a4-f9bc-5216-8592-ad70ab26d118",
       "name": "Lab Notes",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -1040,
-        -130
+        -1420,
+        -220
       ]
     }
   ],
   "connections": {
-    "When chat message received": {
+    "When clicking Execute workflow": {
       "main": [
         [
           {
-            "node": "Campaign Release Agent",
+            "node": "Load Pending Newsletter",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "OpenAI Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Campaign Release Agent",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Schedule Approved Campaign": {
-      "ai_tool": [
-        [
-          {
-            "node": "Review Approved Payload",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Review Approved Payload": {
-      "ai_tool": [
-        [
-          {
-            "node": "Campaign Release Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "MailerLite Create Campaign Contract": {
+    "Load Pending Newsletter": {
       "main": [
         [
           {
-            "node": "MailerLite Schedule Contract",
+            "node": "Canonicalize and Hash",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Canonicalize and Hash": {
+      "main": [
+        [
+          {
+            "node": "Human Newsletter Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Human Newsletter Approval": {
+      "main": [
+        [
+          {
+            "node": "Approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approved?": {
+      "main": [
+        [
+          {
+            "node": "Recheck Exact Payload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Record Rejection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recheck Exact Payload": {
+      "main": [
+        [
+          {
+            "node": "Hash and Expiry Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hash and Expiry Valid?": {
+      "main": [
+        [
+          {
+            "node": "Prepare MailerLite Campaign",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Block Release Guard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare MailerLite Campaign": {
+      "main": [
+        [
+          {
+            "node": "Create MailerLite Campaign",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create MailerLite Campaign": {
+      "main": [
+        [
+          {
+            "node": "Validate Draft Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Draft Response": {
+      "main": [
+        [
+          {
+            "node": "Schedule MailerLite Campaign",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule MailerLite Campaign": {
+      "main": [
+        [
+          {
+            "node": "Capture Release Evidence",
             "type": "main",
             "index": 0
           }

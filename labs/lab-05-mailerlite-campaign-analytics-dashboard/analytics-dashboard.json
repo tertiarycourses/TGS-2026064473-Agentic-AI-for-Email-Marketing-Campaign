@@ -1,0 +1,246 @@
+{
+  "name": "LAB05 - MailerLite Campaign Analytics Dashboard",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "newsletter-dashboard",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "dcb75e1c-1c6e-5909-a8e7-77e38313f6ce",
+      "name": "Dashboard Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1060,
+        160
+      ],
+      "webhookId": "newsletter-dashboard-fa9577c0-155"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "58fd7060-98ea-5066-80d3-cc4d6773edae",
+              "name": "campaign_id",
+              "type": "string",
+              "value": "TRAINING_CAMPAIGN_ID"
+            },
+            {
+              "id": "2d6ce079-30ab-5903-9073-a2cd89580a19",
+              "name": "target_open_rate",
+              "type": "number",
+              "value": 30
+            },
+            {
+              "id": "500b39f5-c604-5429-a24a-3d5cadffe0ad",
+              "name": "target_ctr",
+              "type": "number",
+              "value": 5
+            }
+          ]
+        },
+        "options": {
+          "includeOtherFields": true
+        }
+      },
+      "id": "9fb407cb-c7be-5fc0-ae43-7130124f3c71",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -820,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://connect.mailerlite.com/api/campaigns/{{$json.campaign_id}}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "id": "7d63ec0d-9ee6-584f-aae0-5d027962464d",
+      "name": "Fetch MailerLite Campaign",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -560,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const status=Number($json.statusCode); const campaign=$json.body?.data;\nif(status!==200) throw new Error(`MailerLite report failed: HTTP ${status}; ${JSON.stringify($json.body?.errors||$json.body?.message||'unknown error')}`);\nconst s=campaign?.stats||campaign?.emails?.[0]?.stats;\nif(!campaign?.id||!s) throw new Error('MailerLite report schema invalid: campaign id or email statistics missing');\nreturn [{json:{campaign:{id:campaign.id,name:campaign.name,status:campaign.status,scheduled_for:campaign.scheduled_for,finished_at:campaign.finished_at},stats:{sent:Number(s.sent||0),unique_opens:Number(s.unique_opens_count||0),unique_clicks:Number(s.unique_clicks_count||0),unsubscribes:Number(s.unsubscribes_count||0),spam:Number(s.spam_count||0),hard_bounces:Number(s.hard_bounces_count||0),soft_bounces:Number(s.soft_bounces_count||0)},targets:{open_rate:Number($('Workflow Configuration').item.json.target_open_rate),ctr:Number($('Workflow Configuration').item.json.target_ctr)},refreshed_at:new Date().toISOString()}}];"
+      },
+      "id": "7f9f2133-9ce8-5595-8ec0-198a9c3c4ecf",
+      "name": "Validate Campaign Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -300,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const s=$json.stats; const bounced=s.hard_bounces+s.soft_bounces; const delivered=Math.max(0,s.sent-bounced); const rate=(a,b)=>b?+(100*a/b).toFixed(2):null; const metrics={delivery_rate:rate(delivered,s.sent),open_rate:rate(s.unique_opens,delivered),ctr:rate(s.unique_clicks,delivered),ctor:rate(s.unique_clicks,s.unique_opens),unsubscribe_rate:rate(s.unsubscribes,delivered),spam_rate:rate(s.spam,delivered)}; const gaps={open_rate:metrics.open_rate===null?null:+(metrics.open_rate-$json.targets.open_rate).toFixed(2),ctr:metrics.ctr===null?null:+(metrics.ctr-$json.targets.ctr).toFixed(2)}; return [{json:{...$json,metrics,gaps,funnel:{sent:s.sent,delivered,opened:s.unique_opens,clicked:s.unique_clicks},denominators:{delivery_rate:'sent',open_rate:'delivered',ctr:'delivered',ctor:'unique opens',unsubscribe_rate:'delivered',spam_rate:'delivered'}}}];"
+      },
+      "id": "6652fcd6-4e5c-5cc2-89d5-0f22f8356368",
+      "name": "Aggregate KPIs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -40,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const k=$json.metrics,f=$json.funnel; const safe=v=>String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;'}[c])); const base=Math.max(1,f.sent); const bars=['sent','delivered','opened','clicked'].map(x=>`<div class=bar><b>${x}</b><span style=\"width:${Math.max(2,100*f[x]/base)}%\"></span><em>${f[x].toLocaleString()}</em></div>`).join(''); const cards=Object.entries(k).map(([a,b])=>`<article><small>${a.replaceAll('_',' ')}</small><strong>${b===null?'N/A':b+'%'}</strong><i>denominator: ${$json.denominators[a]}</i></article>`).join(''); const gap=(name)=>$json.gaps[name]===null?'N/A':`${$json.gaps[name]>0?'+':''}${$json.gaps[name]} pp`; return [{json:{html:`<!doctype html><meta charset=utf-8><meta name=viewport content=\"width=device-width,initial-scale=1\"><title>Newsletter dashboard</title><style>body{font:16px Arial;margin:40px;color:#17202a;background:#f7faf9;max-width:1100px}h1{font-size:30px}section{display:grid;grid-template-columns:repeat(3,minmax(190px,1fr));gap:16px}article{background:white;padding:20px;border-radius:16px;border-left:6px solid #008f83}small,i{display:block;text-transform:uppercase;color:#667}strong{display:block;font-size:34px;margin:8px 0}i{font-size:11px}.bar{display:grid;grid-template-columns:110px 1fr 90px;gap:12px;align-items:center;margin:14px 0}.bar span{height:24px;background:#008f83;border-radius:8px}.bar em{text-align:right}.diag{background:#fff4ed;border-left:6px solid #ff6b35;padding:18px;margin-top:22px}@media(max-width:720px){section{grid-template-columns:1fr}.bar{grid-template-columns:90px 1fr 70px}}</style><h1>${safe($json.campaign.name)}</h1><p>Campaign ${safe($json.campaign.id)} · status <b>${safe($json.campaign.status)}</b> · refreshed ${safe($json.refreshed_at)}</p><section>${cards}</section><h2>Delivery funnel</h2>${bars}<div class=diag><b>Target gaps</b><p>Open rate: ${gap('open_rate')} · CTR: ${gap('ctr')}</p><p>Interpret opens directionally; privacy protections may distort them. Prefer downstream clicks and conversions for decisions.</p></div>`}}];"
+      },
+      "id": "f43b7a16-3c3e-587b-b095-6d1a9de7beb6",
+      "name": "Render Dashboard HTML",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{$json.html}}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=utf-8"
+              }
+            ]
+          }
+        }
+      },
+      "id": "e4c93307-c6e2-5e6e-86ea-2bd55c06650c",
+      "name": "Respond with Dashboard",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        490,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "width": 1800,
+        "height": 230,
+        "content": "## Live MailerLite campaign analytics dashboard\nAttach an n8n Header Auth credential containing `Authorization: Bearer <token>` and replace `TRAINING_CAMPAIGN_ID`. The workflow fetches the current campaign object, validates HTTP/schema state, calculates transparent metrics and returns a responsive HTML dashboard. Use the supplied CSV and sample HTML for a credential-free rehearsal."
+      },
+      "id": "434be3a4-f9bc-5216-8592-ad70ab26d118",
+      "name": "Lab Notes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1080,
+        -150
+      ]
+    }
+  ],
+  "connections": {
+    "Dashboard Webhook": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Fetch MailerLite Campaign",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch MailerLite Campaign": {
+      "main": [
+        [
+          {
+            "node": "Validate Campaign Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Campaign Report": {
+      "main": [
+        [
+          {
+            "node": "Aggregate KPIs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate KPIs": {
+      "main": [
+        [
+          {
+            "node": "Render Dashboard HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Render Dashboard HTML": {
+      "main": [
+        [
+          {
+            "node": "Respond with Dashboard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "965dab5c-168a-5d81-92e5-2738be588076",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "pinData": {},
+  "tags": [
+    {
+      "name": "TGS-2026064473"
+    }
+  ]
+}

@@ -1,7 +1,8 @@
 # Lab 3: Multi-Agent Newsletter Editorial System
 
-**Duration:** 120 minutes  
-**Alignment:** LO1 | K1-K2 | A2  
+**Duration:** 120 minutes
+
+**Alignment:** LO1 | K1-K2 | A2
 **Tools:** n8n AI Agent, OpenAI Chat Model, Structured Output Parser, Loop Over Items, Code
 
 ## Goal

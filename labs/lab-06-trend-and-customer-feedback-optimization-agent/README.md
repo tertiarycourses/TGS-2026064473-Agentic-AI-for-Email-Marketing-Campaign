@@ -1,7 +1,8 @@
 # Lab 6: Trend and Customer Feedback Optimization Agent
 
-**Duration:** 90 minutes  
-**Alignment:** LO3 | K6 | A5  
+**Duration:** 90 minutes
+
+**Alignment:** LO3 | K6 | A5
 **Tools:** n8n Code, AI Agent, Structured Output Parser, IF, Chat HITL Tool
 
 ## Goal
