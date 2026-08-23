@@ -1,0 +1,279 @@
+{
+  "name": "LAB01 - Consent-First Lead Capture to MailerLite",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Email Newsletter Sign-up",
+        "formDescription": "Join the newsletter. Consent is required and can be withdrawn at any time.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Company"
+            },
+            {
+              "fieldLabel": "I agree to receive marketing emails",
+              "fieldType": "checkbox",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "7432e02f-31dc-5c34-a5ef-f63f5bd13897",
+      "name": "Lead Capture Form",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -900,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a477c7ed-b8a9-5aff-b76a-784ba1487186",
+              "name": "group_id",
+              "type": "string",
+              "value": "TRAINING_GROUP_ID"
+            },
+            {
+              "id": "130a33bc-6da5-575f-9a1a-342cae40dcda",
+              "name": "consent_text_version",
+              "type": "string",
+              "value": "2026-08-v1"
+            }
+          ]
+        },
+        "options": {
+          "includeOtherFields": true
+        }
+      },
+      "id": "9fb407cb-c7be-5fc0-ae43-7130124f3c71",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -680,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const email = String($json.Email || '').trim().toLowerCase();\nconst consent = Boolean($json['I agree to receive marketing emails']);\nconst valid = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);\nreturn [{json:{...$json,email,name:String($json.Name||'').trim(),company:String($json.Company||'').trim(),consent,opted_in_at:new Date().toISOString().replace('T',' ').replace('Z',''),validation_ok:valid&&consent,validation_error:!valid?'invalid_email':(!consent?'consent_required':'')}}];"
+      },
+      "id": "ade8da84-3525-5850-b104-4a6bf9f814cb",
+      "name": "Normalize Lead",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -440,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "d22099eb-dc8d-5a11-90d3-a8b601ddd847",
+              "leftValue": "={{$json.validation_ok}}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "37b37e20-4375-544f-8c22-f70992dc75ba",
+      "name": "Consent Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -190,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://connect.mailerlite.com/api/subscribers",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({email:$json.email,fields:{name:$json.name,company:$json.company},groups:[$json.group_id],opted_in_at:$json.opted_in_at}) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "id": "0c1c0cd6-acb1-54a8-a39a-e09ad909c491",
+      "name": "Upsert MailerLite Subscriber",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        80,
+        70
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body=$json.body?.data||$json.body||{}; return [{json:{subscriber_id:body.id||null,email:body.email||$('Normalize Lead').item.json.email,status:body.status||null,http_status:$json.statusCode,execution_id:$execution.id,evidence_at:new Date().toISOString()}}];"
+      },
+      "id": "71eb7cef-cb13-5abd-b2a5-f91ed776ba1d",
+      "name": "Capture Safe Evidence",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        340,
+        70
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2b7e477a-4d29-5eca-a7b7-f0730665c500",
+              "name": "result",
+              "type": "string",
+              "value": "={{$json.validation_error}}"
+            }
+          ]
+        },
+        "options": {
+          "includeOtherFields": true
+        }
+      },
+      "id": "2d8f71d8-9109-5b48-abdf-fcf8535d5046",
+      "name": "Reject Without External Write",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "width": 1500,
+        "height": 210,
+        "content": "## Consent-first lead capture\nAttach an n8n Header Auth credential to the HTTP Request node. The header value is `Bearer <MailerLite API token>`. Never place the token in workflow JSON. Replace `TRAINING_GROUP_ID` before execution."
+      },
+      "id": "434be3a4-f9bc-5216-8592-ad70ab26d118",
+      "name": "Lab Notes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -920,
+        -130
+      ]
+    }
+  ],
+  "connections": {
+    "Lead Capture Form": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Normalize Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Lead": {
+      "main": [
+        [
+          {
+            "node": "Consent Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consent Valid?": {
+      "main": [
+        [
+          {
+            "node": "Upsert MailerLite Subscriber",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reject Without External Write",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert MailerLite Subscriber": {
+      "main": [
+        [
+          {
+            "node": "Capture Safe Evidence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9503ea67-321e-5cfe-b43c-05e69090d485",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "pinData": {},
+  "tags": [
+    {
+      "name": "TGS-2026064473"
+    }
+  ]
+}

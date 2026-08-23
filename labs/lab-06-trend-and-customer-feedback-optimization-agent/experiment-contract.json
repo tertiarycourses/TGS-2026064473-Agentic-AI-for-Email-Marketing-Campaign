@@ -1,0 +1,15 @@
+{
+  "hypothesis": "Lower cadence increases CTR without increasing unsubscribes",
+  "primary_metric": "CTR",
+  "guardrail_metrics": [
+    "unsubscribe_rate",
+    "complaint_rate",
+    "bounce_rate"
+  ],
+  "segment": "eligible engaged subscribers",
+  "allocation": "50/50",
+  "window": "2 weeks",
+  "stop_rule": "minimum 1000 delivered per arm",
+  "owner": "Marketing Manager",
+  "approval_status": "pending"
+}

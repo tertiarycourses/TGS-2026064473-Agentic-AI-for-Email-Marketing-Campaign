@@ -1,0 +1,9 @@
+event_id,event_type,occurred_at,campaign_id,subscriber_id,link_id,cohort
+E001,sent,2026-08-01T01:00:00Z,AEMC-2026-001,S001,,new
+E002,delivered,2026-08-01T01:00:02Z,AEMC-2026-001,S001,,new
+E003,opened,2026-08-01T02:10:00Z,AEMC-2026-001,S001,,new
+E004,clicked,2026-08-01T02:12:00Z,AEMC-2026-001,S001,CTA-01,new
+E005,converted,2026-08-01T02:18:00Z,AEMC-2026-001,S001,CTA-01,new
+E006,sent,2026-08-01T01:00:00Z,AEMC-2026-001,S002,,dormant
+E007,delivered,2026-08-01T01:00:02Z,AEMC-2026-001,S002,,dormant
+E008,unsubscribed,2026-08-01T03:00:00Z,AEMC-2026-001,S002,,dormant

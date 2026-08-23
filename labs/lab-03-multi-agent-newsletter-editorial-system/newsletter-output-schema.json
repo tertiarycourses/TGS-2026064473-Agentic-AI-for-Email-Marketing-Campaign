@@ -1,0 +1,36 @@
+{
+  "type": "object",
+  "required": [
+    "subject",
+    "preheader",
+    "html",
+    "text",
+    "cta",
+    "citations",
+    "risk_flags"
+  ],
+  "properties": {
+    "subject": {
+      "type": "string",
+      "maxLength": 60
+    },
+    "preheader": {
+      "type": "string"
+    },
+    "html": {
+      "type": "string"
+    },
+    "text": {
+      "type": "string"
+    },
+    "cta": {
+      "type": "object"
+    },
+    "citations": {
+      "type": "array"
+    },
+    "risk_flags": {
+      "type": "array"
+    }
+  }
+}

@@ -1,0 +1,5 @@
+source_id,campaign_id,week,feedback,email
+F01,AEMC-2026-001,W4,Too many emails this week,redacted1@example.com
+F02,AEMC-2026-001,W5,The guide was clear and useful,redacted2@example.com
+F03,AEMC-2026-001,W6,Please reduce the frequency,redacted3@example.com
+F04,AEMC-2026-001,W6,I liked the practical examples,redacted4@example.com

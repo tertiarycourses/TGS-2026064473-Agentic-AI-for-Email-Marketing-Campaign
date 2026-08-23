@@ -1,0 +1,4 @@
+name,email,company,consent
+Aisha,aisha@example.com,Northstar,true
+Ben,BEN@example.com ,Blue Finch,true
+Chen,chen@example.com,Cedar,false

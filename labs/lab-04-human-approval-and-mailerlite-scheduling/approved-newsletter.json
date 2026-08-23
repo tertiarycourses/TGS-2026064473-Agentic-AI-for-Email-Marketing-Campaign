@@ -1,0 +1,18 @@
+{
+  "campaign_id": "AEMC-2026-001",
+  "content_version": 1,
+  "subject": "A safer way to scale your newsletter",
+  "preheader": "Combine specialist AI agents with a human release gate.",
+  "html": "<h1>Build a controlled campaign loop</h1><p>Draft with agents, approve the exact payload, then schedule.</p><p><a href='https://example.com/book'>Book a consultation</a></p>",
+  "text": "Build a controlled campaign loop. Book: https://example.com/book",
+  "from_name": "Training Marketing Team",
+  "verified_sender": "replace-with-verified-sender@example.com",
+  "group_id": "TRAINING_GROUP_ID",
+  "schedule": {
+    "date": "2026-09-15",
+    "hours": "10",
+    "minutes": "00",
+    "timezone_id": 1
+  },
+  "payload_hash": "965d9a8c076ab6ffd09e707a710dc75c437b742ef218c7f8878350bc4c80f4ab"
+}

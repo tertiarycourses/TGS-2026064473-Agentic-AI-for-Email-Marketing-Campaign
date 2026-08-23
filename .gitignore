@@ -1,0 +1,12 @@
+.DS_Store
+.env
+.claude/
+assessment/
+reference/
+courseware/*.pptx
+courseware/*.docx
+courseware/LP-*
+courseware/SLIDE-MAP-*
+courseware/TECHNICAL-ANCHOR-*
+**/__pycache__/
+*.pyc

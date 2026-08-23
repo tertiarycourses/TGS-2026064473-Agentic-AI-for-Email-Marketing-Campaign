@@ -1,0 +1,450 @@
+{
+  "name": "LAB03 - Multi-Agent Newsletter Editorial System",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "39433395-e237-5662-aff0-9ab4207e1056",
+      "name": "When clicking Execute workflow",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1220,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "da0fb7b8-d8a0-55c1-be45-90383cf0298e",
+              "name": "brief",
+              "type": "object",
+              "value": "={{ {campaign_id:'AEMC-2026-001',objective:'Generate 35 qualified demo requests',audience:'Singapore SME marketing managers',primary_cta:'Book a consultation',voice:['clear','evidence-led','helpful'],source_ids:['SRC-01','SRC-02']} }}"
+            },
+            {
+              "id": "67dcc8e3-4cd1-5062-b8ef-3252723b640b",
+              "name": "revision_count",
+              "type": "number",
+              "value": 0
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "62403a4c-8793-5dd3-91e0-37dd005ddab2",
+      "name": "Load Validated Brief",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1010,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Campaign brief: {{JSON.stringify($json.brief)}}",
+        "options": {
+          "systemMessage": "You are the newsletter strategist. Return a concise JSON content plan with audience_need, narrative_arc, proof_points, and exactly one primary_cta. Do not write the newsletter."
+        }
+      },
+      "id": "70b6e714-b4c3-506c-b821-534d17689237",
+      "name": "Strategist Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -780,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Brief: {{JSON.stringify($('Load Validated Brief').item.json.brief)}}\nPlan: {{$json.output}}",
+        "options": {
+          "systemMessage": "You are the evidence researcher. Return JSON claims where every claim contains claim_text and an allowed source_id. Do not invent sources."
+        }
+      },
+      "id": "35e9fe64-9b55-56a7-8f5b-b2a60fce02fb",
+      "name": "Research Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -540,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Brief: {{JSON.stringify($('Load Validated Brief').item.json.brief)}}\nStrategy: {{$('Strategist Agent').item.json.output}}\nClaims: {{$json.output}}",
+        "options": {
+          "systemMessage": "You are the copywriter. Produce structured newsletter JSON with subject, preheader, html, text, cta, citations, and risk_flags. Preserve source IDs and one CTA."
+        }
+      },
+      "id": "f3efeba2-4aba-5402-ae6a-cc2aaa3523fa",
+      "name": "Copywriter Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -300,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Brief: {{JSON.stringify($('Load Validated Brief').item.json.brief)}}\nDraft: {{$json.output}}",
+        "options": {
+          "systemMessage": "You are the compliance critic. Score brand, evidence, compliance, and actionability from 0-100. Return JSON with scores, required_changes, and pass=true only when every score is at least 80."
+        },
+        "hasOutputParser": true
+      },
+      "id": "7eba343d-12f8-5644-9021-10af6e0a83bd",
+      "name": "Compliance Critic",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -60,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\"scores\": {\"brand\": 88, \"evidence\": 86, \"compliance\": 92, \"actionability\": 90}, \"required_changes\": [], \"pass\": true}"
+      },
+      "id": "0c8f70a3-c064-514e-8b81-0f05b19f1178",
+      "name": "Critic Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -40,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "3525ae83-aa5f-5ded-9eb8-bf68350df2e0",
+              "leftValue": "={{$json.output.pass}}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c0e4955e-c3e7-5c72-b395-d49254d1c121",
+      "name": "Quality Gate",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        210,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0a359ce0-2204-5baa-884d-f708bab050fa",
+              "name": "status",
+              "type": "string",
+              "value": "ready_for_human_review"
+            },
+            {
+              "id": "82e59b35-d870-56cb-86d7-df574894fe39",
+              "name": "draft",
+              "type": "object",
+              "value": "={{$('Copywriter Agent').item.json.output}}"
+            },
+            {
+              "id": "b5639e75-35ed-538e-a69f-f4047ffee65e",
+              "name": "scorecard",
+              "type": "object",
+              "value": "={{$json.output}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "70435fef-2fa9-54ee-a7fd-9e374166b4ba",
+      "name": "Final Approved Draft",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        500,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Original draft: {{JSON.stringify($('Copywriter Agent').item.json.output)}}\nCritic: {{JSON.stringify($json.output)}}",
+        "options": {
+          "systemMessage": "You are the refiner. Apply only the critic's required changes. Return the same newsletter schema and preserve citations."
+        }
+      },
+      "id": "d165cb08-a722-579e-b522-0ec21bedb87c",
+      "name": "Refiner Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        480,
+        310
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const count=($('Load Validated Brief').item.json.revision_count||0)+1; return [{json:{draft:$json.output,revision_count:count,needs_human_review:count>=2}}];"
+      },
+      "id": "e906e456-a8d8-5909-ae24-da5422a20660",
+      "name": "Bound Revision",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        730,
+        310
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "55407c59-2227-506f-9436-c33c7ded94cb",
+              "name": "status",
+              "type": "string",
+              "value": "needs_human_review"
+            }
+          ]
+        },
+        "options": {
+          "includeOtherFields": true
+        }
+      },
+      "id": "e434c71b-bf04-59c2-81fc-f09336e5bbab",
+      "name": "Escalation Record",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        980,
+        310
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {
+          "responseFormat": "json_object"
+        }
+      },
+      "id": "1e4a3e39-153d-5225-9939-8d3f62a3bce5",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -220,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "width": 2200,
+        "height": 220,
+        "content": "## Multi-agent newsletter editorial system\nFive explicit roles share a versioned brief and structured contracts. The workflow has no external send or schedule tool. A failing draft is revised once in this learner build, then escalated for human review."
+      },
+      "id": "434be3a4-f9bc-5216-8592-ad70ab26d118",
+      "name": "Lab Notes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1220,
+        -120
+      ]
+    }
+  ],
+  "connections": {
+    "When clicking Execute workflow": {
+      "main": [
+        [
+          {
+            "node": "Load Validated Brief",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Validated Brief": {
+      "main": [
+        [
+          {
+            "node": "Strategist Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Strategist Agent": {
+      "main": [
+        [
+          {
+            "node": "Research Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Research Agent": {
+      "main": [
+        [
+          {
+            "node": "Copywriter Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copywriter Agent": {
+      "main": [
+        [
+          {
+            "node": "Compliance Critic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compliance Critic": {
+      "main": [
+        [
+          {
+            "node": "Quality Gate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Quality Gate": {
+      "main": [
+        [
+          {
+            "node": "Final Approved Draft",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Refiner Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Refiner Agent": {
+      "main": [
+        [
+          {
+            "node": "Bound Revision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bound Revision": {
+      "main": [
+        [
+          {
+            "node": "Escalation Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Strategist Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Research Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Copywriter Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Compliance Critic",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Refiner Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Critic Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Compliance Critic",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8c559156-4d6b-534d-9eb5-3ea29e36101f",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "pinData": {},
+  "tags": [
+    {
+      "name": "TGS-2026064473"
+    }
+  ]
+}

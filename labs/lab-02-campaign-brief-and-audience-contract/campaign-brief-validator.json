@@ -1,0 +1,202 @@
+{
+  "name": "LAB02 - Campaign Brief and Audience Contract",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "39433395-e237-5662-aff0-9ab4207e1056",
+      "name": "When clicking Execute workflow",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -720,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "82c5ae0d-cd0a-568b-9adf-574d41968ebe",
+              "name": "brief",
+              "type": "object",
+              "value": "={\"campaign_id\": \"AEMC-2026-001\", \"brief_version\": 1, \"objective\": \"Generate 35 qualified demo requests\", \"offer\": \"Practical email automation consultation\", \"eligible_group\": \"TRAINING_GROUP_ID\", \"exclusions\": [\"unsubscribed\", \"existing open opportunity\"], \"primary_cta\": \"Book a consultation\", \"cta_url\": \"https://example.com/book\", \"voice\": [\"clear\", \"evidence-led\", \"helpful\"], \"prohibited_claims\": [\"guaranteed results\", \"unsupported benchmark\"], \"source_ids\": [\"SRC-01\", \"SRC-02\"], \"schedule_local\": \"2026-09-15 10:00\", \"timezone\": \"Asia/Singapore\"}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "42f94889-da51-5501-acd1-88f6c7c0ff52",
+      "name": "Campaign Brief",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -500,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const b=$json.brief||{}; const required=['campaign_id','brief_version','objective','eligible_group','exclusions','primary_cta','cta_url','voice','prohibited_claims','source_ids','schedule_local','timezone']; const errors=required.filter(k=>b[k]===undefined||b[k]===null||b[k]===''||(Array.isArray(b[k])&&b[k].length===0)).map(k=>`missing_${k}`); if((b.exclusions||[]).length<2) errors.push('at_least_two_exclusions'); const canonical=JSON.stringify(b,Object.keys(b).sort()); return [{json:{...b,validation_ok:errors.length===0,validation_errors:errors,brief_hash:require('crypto').createHash('sha256').update(canonical).digest('hex')}}];"
+      },
+      "id": "d0e8c376-46a1-5871-92ad-2e7964b7a2e0",
+      "name": "Validate Brief",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -260,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "f0be35c7-3ad9-5270-a2a6-71d70d404110",
+              "leftValue": "={{$json.validation_ok}}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "5a0cae52-58eb-57b6-a644-71fdeb97d227",
+      "name": "Brief Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -20,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dde779db-29f2-52a7-9d68-5ead5206a77e",
+              "name": "status",
+              "type": "string",
+              "value": "validated"
+            }
+          ]
+        },
+        "options": {
+          "includeOtherFields": true
+        }
+      },
+      "id": "e738d05c-c029-5895-aff7-3ad273091a9e",
+      "name": "Approved Agent Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        250,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "71a77fa4-6512-54a2-aae9-4c2305fbec41",
+              "name": "status",
+              "type": "string",
+              "value": "blocked"
+            }
+          ]
+        },
+        "options": {
+          "includeOtherFields": true
+        }
+      },
+      "id": "68b04b18-edb4-5e4b-afdd-8f740a3cbcef",
+      "name": "Return Validation Errors",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        250,
+        210
+      ]
+    }
+  ],
+  "connections": {
+    "When clicking Execute workflow": {
+      "main": [
+        [
+          {
+            "node": "Campaign Brief",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Campaign Brief": {
+      "main": [
+        [
+          {
+            "node": "Validate Brief",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Brief": {
+      "main": [
+        [
+          {
+            "node": "Brief Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brief Valid?": {
+      "main": [
+        [
+          {
+            "node": "Approved Agent Context",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return Validation Errors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "80ed46d4-9c1d-5835-bd11-371a78cefd81",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "pinData": {},
+  "tags": [
+    {
+      "name": "TGS-2026064473"
+    }
+  ]
+}

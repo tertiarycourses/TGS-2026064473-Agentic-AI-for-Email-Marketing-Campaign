@@ -1,0 +1,28 @@
+{
+  "campaign_id": "AEMC-2026-001",
+  "brief_version": 1,
+  "objective": "Generate 35 qualified demo requests",
+  "offer": "Email automation consultation",
+  "eligible_group": "TRAINING_GROUP_ID",
+  "exclusions": [
+    "unsubscribed",
+    "existing open opportunity"
+  ],
+  "primary_cta": "Book a consultation",
+  "cta_url": "https://example.com/book",
+  "voice": [
+    "clear",
+    "evidence-led",
+    "helpful"
+  ],
+  "prohibited_claims": [
+    "guaranteed results",
+    "unsupported benchmark"
+  ],
+  "source_ids": [
+    "SRC-01",
+    "SRC-02"
+  ],
+  "schedule_local": "2026-09-15 10:00",
+  "timezone": "Asia/Singapore"
+}
