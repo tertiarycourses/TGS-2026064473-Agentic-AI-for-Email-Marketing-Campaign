@@ -1,0 +1,698 @@
+[
+  {
+    "slide": 1,
+    "kind": "cover",
+    "anchor": "ADMIN",
+    "title": "Agentic AI for Email Marketing Campaign"
+  },
+  {
+    "slide": 2,
+    "kind": "section",
+    "anchor": "ADMIN",
+    "title": "Welcome and Learning Contract"
+  },
+  {
+    "slide": 3,
+    "kind": "content",
+    "anchor": "ADMIN",
+    "title": "Digital Attendance (Mandatory)"
+  },
+  {
+    "slide": 4,
+    "kind": "admin",
+    "anchor": "ADMIN",
+    "title": "About the Trainer"
+  },
+  {
+    "slide": 5,
+    "kind": "admin",
+    "anchor": "ADMIN",
+    "title": "About the Trainer"
+  },
+  {
+    "slide": 6,
+    "kind": "content",
+    "anchor": "ADMIN",
+    "title": "Let's Know Each Other"
+  },
+  {
+    "slide": 7,
+    "kind": "content",
+    "anchor": "ADMIN",
+    "title": "Ground Rules"
+  },
+  {
+    "slide": 8,
+    "kind": "content",
+    "anchor": "ADMIN",
+    "title": "Download Course Material"
+  },
+  {
+    "slide": 9,
+    "kind": "content",
+    "anchor": "ADMIN",
+    "title": "Two-Day Learning Journey"
+  },
+  {
+    "slide": 10,
+    "kind": "content",
+    "anchor": "ADMIN",
+    "title": "Skills Framework"
+  },
+  {
+    "slide": 11,
+    "kind": "content",
+    "anchor": "ADMIN",
+    "title": "Learning Outcomes"
+  },
+  {
+    "slide": 12,
+    "kind": "content",
+    "anchor": "ADMIN",
+    "title": "Course Outline"
+  },
+  {
+    "slide": 13,
+    "kind": "content",
+    "anchor": "ADMIN",
+    "title": "Knowledge and Ability Coverage"
+  },
+  {
+    "slide": 14,
+    "kind": "content",
+    "anchor": "ADMIN",
+    "title": "Briefing for Assessment"
+  },
+  {
+    "slide": 15,
+    "kind": "content",
+    "anchor": "ADMIN",
+    "title": "Assessment Instruments"
+  },
+  {
+    "slide": 16,
+    "kind": "content",
+    "anchor": "ADMIN",
+    "title": "Assessment Flow"
+  },
+  {
+    "slide": 17,
+    "kind": "content",
+    "anchor": "ADMIN",
+    "title": "Practice Knowledge Portal"
+  },
+  {
+    "slide": 18,
+    "kind": "section",
+    "anchor": "ADMIN",
+    "title": "The Controlled Campaign Loop"
+  },
+  {
+    "slide": 19,
+    "kind": "content",
+    "anchor": "ARCH",
+    "title": "The Closed-Loop Campaign System"
+  },
+  {
+    "slide": 20,
+    "kind": "content",
+    "anchor": "MODEL",
+    "title": "Automation, AI Workflow and Agentic System"
+  },
+  {
+    "slide": 21,
+    "kind": "content",
+    "anchor": "CONFIG",
+    "title": "Campaign State Is a Contract"
+  },
+  {
+    "slide": 22,
+    "kind": "content",
+    "anchor": "MODEL",
+    "title": "Autonomy Boundary for Email Marketing"
+  },
+  {
+    "slide": 23,
+    "kind": "content",
+    "anchor": "FORMULA",
+    "title": "From Objective to Testable Campaign KPI"
+  },
+  {
+    "slide": 24,
+    "kind": "content",
+    "anchor": "MODEL",
+    "title": "Three Data Planes"
+  },
+  {
+    "slide": 25,
+    "kind": "content",
+    "anchor": "EVIDENCE",
+    "title": "Minimum Audit Record"
+  },
+  {
+    "slide": 26,
+    "kind": "content",
+    "anchor": "CASE",
+    "title": "Failure Taxonomy Before the Build"
+  },
+  {
+    "slide": 27,
+    "kind": "section",
+    "anchor": "ADMIN",
+    "title": "Implementing Agentic AI Email Marketing Campaigns"
+  },
+  {
+    "slide": 28,
+    "kind": "content",
+    "anchor": "MODEL",
+    "title": "Topic 01 Coverage"
+  },
+  {
+    "slide": 29,
+    "kind": "content",
+    "anchor": "EVIDENCE",
+    "title": "Specialists Propose; the Editor Decides"
+  },
+  {
+    "slide": 30,
+    "kind": "content",
+    "anchor": "ARCH",
+    "title": "Lead Capture Runtime Trace"
+  },
+  {
+    "slide": 31,
+    "kind": "content",
+    "anchor": "CONFIG",
+    "title": "Consent Record Schema"
+  },
+  {
+    "slide": 32,
+    "kind": "content",
+    "anchor": "CODE",
+    "title": "MailerLite Subscriber Upsert"
+  },
+  {
+    "slide": 33,
+    "kind": "content",
+    "anchor": "MODEL",
+    "title": "Upsert Is Not Resubscribe"
+  },
+  {
+    "slide": 34,
+    "kind": "content",
+    "anchor": "ARCH",
+    "title": "Campaign Brief Becomes Agent Context"
+  },
+  {
+    "slide": 35,
+    "kind": "content",
+    "anchor": "CONFIG",
+    "title": "Newsletter Output Schema"
+  },
+  {
+    "slide": 36,
+    "kind": "content",
+    "anchor": "ARCH",
+    "title": "Multi-Agent Editorial Loop"
+  },
+  {
+    "slide": 37,
+    "kind": "content",
+    "anchor": "MODEL",
+    "title": "Parallel Specialists vs Sequential Review"
+  },
+  {
+    "slide": 38,
+    "kind": "content",
+    "anchor": "FORMULA",
+    "title": "Quality Gate as a Deterministic Score"
+  },
+  {
+    "slide": 39,
+    "kind": "content",
+    "anchor": "CONFIG",
+    "title": "Reviewer Decision Payload"
+  },
+  {
+    "slide": 40,
+    "kind": "content",
+    "anchor": "MODEL",
+    "title": "Approval Must Bind to the Exact Payload"
+  },
+  {
+    "slide": 41,
+    "kind": "content",
+    "anchor": "CODE",
+    "title": "Create a MailerLite Campaign Draft"
+  },
+  {
+    "slide": 42,
+    "kind": "content",
+    "anchor": "CODE",
+    "title": "Schedule Only After Approval"
+  },
+  {
+    "slide": 43,
+    "kind": "content",
+    "anchor": "ARCH",
+    "title": "Idempotent Schedule Pattern"
+  },
+  {
+    "slide": 44,
+    "kind": "content",
+    "anchor": "CASE",
+    "title": "Campaign-Write Failure Modes"
+  },
+  {
+    "slide": 45,
+    "kind": "content",
+    "anchor": "EVIDENCE",
+    "title": "LO1 Evidence Bundle"
+  },
+  {
+    "slide": 46,
+    "kind": "section",
+    "anchor": "ADMIN",
+    "title": "Consent-First Lead Capture to MailerLite"
+  },
+  {
+    "slide": 47,
+    "kind": "content",
+    "anchor": "CASE",
+    "title": "Lab 1 Scenario"
+  },
+  {
+    "slide": 48,
+    "kind": "content",
+    "anchor": "ARCH",
+    "title": "Lab 1 Runtime Mechanism"
+  },
+  {
+    "slide": 49,
+    "kind": "content",
+    "anchor": "CONFIG",
+    "title": "Lab 1 Concrete Contract"
+  },
+  {
+    "slide": 50,
+    "kind": "content",
+    "anchor": "EVIDENCE",
+    "title": "Lab 1 Evidence Package"
+  },
+  {
+    "slide": 51,
+    "kind": "content",
+    "anchor": "CASE",
+    "title": "Lab 1 Verification and Failure"
+  },
+  {
+    "slide": 52,
+    "kind": "section",
+    "anchor": "ADMIN",
+    "title": "Campaign Brief and Audience Contract"
+  },
+  {
+    "slide": 53,
+    "kind": "content",
+    "anchor": "CASE",
+    "title": "Lab 2 Scenario"
+  },
+  {
+    "slide": 54,
+    "kind": "content",
+    "anchor": "ARCH",
+    "title": "Lab 2 Runtime Mechanism"
+  },
+  {
+    "slide": 55,
+    "kind": "content",
+    "anchor": "CONFIG",
+    "title": "Lab 2 Concrete Contract"
+  },
+  {
+    "slide": 56,
+    "kind": "content",
+    "anchor": "EVIDENCE",
+    "title": "Lab 2 Evidence Package"
+  },
+  {
+    "slide": 57,
+    "kind": "content",
+    "anchor": "CASE",
+    "title": "Lab 2 Verification and Failure"
+  },
+  {
+    "slide": 58,
+    "kind": "section",
+    "anchor": "ADMIN",
+    "title": "Multi-Agent Newsletter Editorial System"
+  },
+  {
+    "slide": 59,
+    "kind": "content",
+    "anchor": "CASE",
+    "title": "Lab 3 Scenario"
+  },
+  {
+    "slide": 60,
+    "kind": "content",
+    "anchor": "ARCH",
+    "title": "Lab 3 Runtime Mechanism"
+  },
+  {
+    "slide": 61,
+    "kind": "content",
+    "anchor": "CONFIG",
+    "title": "Lab 3 Concrete Contract"
+  },
+  {
+    "slide": 62,
+    "kind": "content",
+    "anchor": "EVIDENCE",
+    "title": "Lab 3 Evidence Package"
+  },
+  {
+    "slide": 63,
+    "kind": "content",
+    "anchor": "CASE",
+    "title": "Lab 3 Verification and Failure"
+  },
+  {
+    "slide": 64,
+    "kind": "section",
+    "anchor": "ADMIN",
+    "title": "Human Approval and MailerLite Scheduling"
+  },
+  {
+    "slide": 65,
+    "kind": "content",
+    "anchor": "CASE",
+    "title": "Lab 4 Scenario"
+  },
+  {
+    "slide": 66,
+    "kind": "content",
+    "anchor": "ARCH",
+    "title": "Lab 4 Runtime Mechanism"
+  },
+  {
+    "slide": 67,
+    "kind": "content",
+    "anchor": "CONFIG",
+    "title": "Lab 4 Concrete Contract"
+  },
+  {
+    "slide": 68,
+    "kind": "content",
+    "anchor": "EVIDENCE",
+    "title": "Lab 4 Evidence Package"
+  },
+  {
+    "slide": 69,
+    "kind": "content",
+    "anchor": "CASE",
+    "title": "Lab 4 Verification and Failure"
+  },
+  {
+    "slide": 70,
+    "kind": "section",
+    "anchor": "ADMIN",
+    "title": "AI-Driven Campaign Performance and Consumer Insights Analysis"
+  },
+  {
+    "slide": 71,
+    "kind": "content",
+    "anchor": "MODEL",
+    "title": "Topic 02 Coverage"
+  },
+  {
+    "slide": 72,
+    "kind": "content",
+    "anchor": "EVIDENCE",
+    "title": "Acquisition, Delivery, Measurement, Optimization"
+  },
+  {
+    "slide": 73,
+    "kind": "content",
+    "anchor": "ARCH",
+    "title": "Analytics Ingestion Runtime Trace"
+  },
+  {
+    "slide": 74,
+    "kind": "content",
+    "anchor": "CONFIG",
+    "title": "Campaign Event Fact"
+  },
+  {
+    "slide": 75,
+    "kind": "content",
+    "anchor": "CODE",
+    "title": "Verify MailerLite Webhook Signature"
+  },
+  {
+    "slide": 76,
+    "kind": "content",
+    "anchor": "FORMULA",
+    "title": "Email KPI Definitions"
+  },
+  {
+    "slide": 77,
+    "kind": "content",
+    "anchor": "FORMULA",
+    "title": "Funnel Reveals Where Value Is Lost"
+  },
+  {
+    "slide": 78,
+    "kind": "content",
+    "anchor": "FORMULA",
+    "title": "Target vs Actual Campaign KPIs"
+  },
+  {
+    "slide": 79,
+    "kind": "content",
+    "anchor": "FORMULA",
+    "title": "Cohort View Separates Audience Effects"
+  },
+  {
+    "slide": 80,
+    "kind": "content",
+    "anchor": "MODEL",
+    "title": "Webhook vs Scheduled Poll"
+  },
+  {
+    "slide": 81,
+    "kind": "content",
+    "anchor": "MODEL",
+    "title": "When Is an Alert Actionable?"
+  },
+  {
+    "slide": 82,
+    "kind": "content",
+    "anchor": "CASE",
+    "title": "Measurement Limitations"
+  },
+  {
+    "slide": 83,
+    "kind": "content",
+    "anchor": "EVIDENCE",
+    "title": "LO2 Evidence Bundle"
+  },
+  {
+    "slide": 84,
+    "kind": "section",
+    "anchor": "ADMIN",
+    "title": "MailerLite Campaign Analytics Dashboard"
+  },
+  {
+    "slide": 85,
+    "kind": "content",
+    "anchor": "CASE",
+    "title": "Lab 5 Scenario"
+  },
+  {
+    "slide": 86,
+    "kind": "content",
+    "anchor": "ARCH",
+    "title": "Lab 5 Runtime Mechanism"
+  },
+  {
+    "slide": 87,
+    "kind": "content",
+    "anchor": "CONFIG",
+    "title": "Lab 5 Concrete Contract"
+  },
+  {
+    "slide": 88,
+    "kind": "content",
+    "anchor": "EVIDENCE",
+    "title": "Lab 5 Evidence Package"
+  },
+  {
+    "slide": 89,
+    "kind": "content",
+    "anchor": "CASE",
+    "title": "Lab 5 Verification and Failure"
+  },
+  {
+    "slide": 90,
+    "kind": "section",
+    "anchor": "ADMIN",
+    "title": "AI Agent Analysis of Market Trends and Customer Feedback"
+  },
+  {
+    "slide": 91,
+    "kind": "content",
+    "anchor": "MODEL",
+    "title": "Topic 03 Coverage"
+  },
+  {
+    "slide": 92,
+    "kind": "content",
+    "anchor": "ARCH",
+    "title": "Trend and Feedback Analysis Trace"
+  },
+  {
+    "slide": 93,
+    "kind": "content",
+    "anchor": "CONFIG",
+    "title": "Evidence Card for Every Finding"
+  },
+  {
+    "slide": 94,
+    "kind": "content",
+    "anchor": "MODEL",
+    "title": "Signal, Inference and Recommendation"
+  },
+  {
+    "slide": 95,
+    "kind": "content",
+    "anchor": "FORMULA",
+    "title": "Feedback Themes by Campaign"
+  },
+  {
+    "slide": 96,
+    "kind": "content",
+    "anchor": "FORMULA",
+    "title": "Trend Needs a Window and Baseline"
+  },
+  {
+    "slide": 97,
+    "kind": "content",
+    "anchor": "FORMULA",
+    "title": "Priority Score for Improvement Ideas"
+  },
+  {
+    "slide": 98,
+    "kind": "content",
+    "anchor": "MODEL",
+    "title": "Agent Recommendation Release Gate"
+  },
+  {
+    "slide": 99,
+    "kind": "content",
+    "anchor": "CONFIG",
+    "title": "Optimization Experiment Contract"
+  },
+  {
+    "slide": 100,
+    "kind": "content",
+    "anchor": "CASE",
+    "title": "Feedback-Analysis Failure Modes"
+  },
+  {
+    "slide": 101,
+    "kind": "content",
+    "anchor": "EVIDENCE",
+    "title": "LO3 Evidence Bundle"
+  },
+  {
+    "slide": 102,
+    "kind": "section",
+    "anchor": "ADMIN",
+    "title": "Trend and Customer Feedback Optimization Agent"
+  },
+  {
+    "slide": 103,
+    "kind": "content",
+    "anchor": "CASE",
+    "title": "Lab 6 Scenario"
+  },
+  {
+    "slide": 104,
+    "kind": "content",
+    "anchor": "ARCH",
+    "title": "Lab 6 Runtime Mechanism"
+  },
+  {
+    "slide": 105,
+    "kind": "content",
+    "anchor": "CONFIG",
+    "title": "Lab 6 Concrete Contract"
+  },
+  {
+    "slide": 106,
+    "kind": "content",
+    "anchor": "EVIDENCE",
+    "title": "Lab 6 Evidence Package"
+  },
+  {
+    "slide": 107,
+    "kind": "content",
+    "anchor": "CASE",
+    "title": "Lab 6 Verification and Failure"
+  },
+  {
+    "slide": 108,
+    "kind": "section",
+    "anchor": "ADMIN",
+    "title": "From Evidence to Assessment"
+  },
+  {
+    "slide": 109,
+    "kind": "content",
+    "anchor": "ADMIN",
+    "title": "Revision Map"
+  },
+  {
+    "slide": 110,
+    "kind": "content",
+    "anchor": "ADMIN",
+    "title": "Assessment Reminder"
+  },
+  {
+    "slide": 111,
+    "kind": "content",
+    "anchor": "ADMIN",
+    "title": "Assessment Flow"
+  },
+  {
+    "slide": 112,
+    "kind": "content",
+    "anchor": "ADMIN",
+    "title": "TRAQOM Survey (Mandatory)"
+  },
+  {
+    "slide": 113,
+    "kind": "content",
+    "anchor": "ADMIN",
+    "title": "Certificate Delivery"
+  },
+  {
+    "slide": 114,
+    "kind": "content",
+    "anchor": "ADMIN",
+    "title": "Digital Attendance (Mandatory)"
+  },
+  {
+    "slide": 115,
+    "kind": "content",
+    "anchor": "ADMIN",
+    "title": "Support"
+  },
+  {
+    "slide": 116,
+    "kind": "closing",
+    "anchor": "ADMIN",
+    "title": "Thank You"
+  }
+]
